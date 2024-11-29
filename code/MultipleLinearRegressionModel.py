@@ -14,7 +14,7 @@ np.set_printoptions(precision=2)
 from sklearn.linear_model import LinearRegression
 
 
-df=pd.read_csv('/Users/mali/Downloads/multiple_linear_regression_dataset.csv')
+df=pd.read_csv('/Users/mali/Downloads/multiple_linear_regression_dataset kopyası.csv')
 
 x=df.iloc[:,:2].to_numpy()
 y=df.iloc[:,2].to_numpy()
@@ -25,6 +25,16 @@ w_init=np.array([8.9,300])
 b_init=25000
 
 x_vec=x[0]
+
+x_features = ['Age','Experience']
+
+fig,ax=plt.subplots(1, 2, figsize=(12,3),sharey=True)
+for i in range(len(ax)):
+    ax[i].scatter(x[:,i],y)
+    ax[i].set_xlabel(x_features[i])
+ax[0].set_ylabel('Income')
+plt.show()
+    
 
 
 def my_dot(x,w,b):
@@ -41,6 +51,9 @@ def dot_prod(x,w,b):
     f_wb= np.dot(x,w)+b
     return f_wb
 
+print(my_dot(x_vec, w_init, b_init))
+print(dot_prod(x_vec, w_init, b_init))
+
 def compute_cost_multi(x,y,w,b):
     m=x.shape[0]
     cost = 0.0
@@ -51,6 +64,8 @@ def compute_cost_multi(x,y,w,b):
     total_cost = cost / (2*m)
     
     return total_cost
+
+print(compute_cost_multi(x,y_train,w_init,b_init))
 
 def compute_gradient_multi(x,y,w,b):
     m,n=x.shape
@@ -68,22 +83,35 @@ def compute_gradient_multi(x,y,w,b):
     
     return dj_dw,dj_db
 
-def gradient_descent_multi(x,y,alpha,num_iter,gradient_compute):
+def gradient_descent_multi(x,y,alpha,num_iter,gradient_compute,cost_function):
     n=x.shape[1]
     b=0
     w=np.zeros((n,))
+    J_hist=[]
+    index=[]
     
     for i in range(num_iter):
         tmp_w,tmp_b=gradient_compute(x,y,w,b)
         w = w - alpha * tmp_w
         b = b - alpha * tmp_b
         
+        if i % 100 == 0:
+            J_hist.append(cost_function(x,y,w,b))
+            index.append(i)
+    
+    plt.plot(J_hist,index)
+    plt.xlabel('index')
+    plt.ylabel('Cost')
+    plt.show()
+        
     return w,b
 
 tmp_alpha = 5.0e-7
 iterations = 10000
 
-w_final,b_final = gradient_descent_multi(x,y_train,tmp_alpha,iterations,compute_gradient_multi)
+w_final,b_final = gradient_descent_multi(x,y_train,tmp_alpha,iterations,compute_gradient_multi,compute_cost_multi)
+
+print(w_final,b_final)
 
 lin_model = LinearRegression()
 
@@ -91,7 +119,5 @@ lin_model.fit(x,y_train)
 best_w=lin_model.coef_.reshape(-1,1)
 best_b=lin_model.intercept_
 
-pred1=dot_prod(x_vec, w_final, b_final)
-pred2=lin_model.predict([x_vec])
+print(best_w,best_b)
 
-## Probably ı can't find correct alpha value so our predictions are very different each other ı will try fix that and ı will share new model
