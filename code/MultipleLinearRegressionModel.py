@@ -99,7 +99,7 @@ def gradient_descent_multi(x,y,alpha,num_iter,gradient_compute,cost_function):
             J_hist.append(cost_function(x,y,w,b))
             index.append(i)
     
-    plt.plot(J_hist,index)
+    plt.plot(index,J_hist)
     plt.xlabel('index')
     plt.ylabel('Cost')
     plt.show()
